@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de bord : Énergies Alternatives</title>
+  <link href="https://fonts.googleapis.com/css?family=Orbitron:700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: radial-gradient(ellipse at 50% 0%, #222 60%, #111 100%);
+      color: #fff;
+      font-family: 'Orbitron', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    h1 {
+      text-align: center;
+      margin: 50px 0 30px 0;
+      font-size: 2.6rem;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg,#38f9d7 30%,#d91e36 60%,#f3f94d 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .dashboard {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: rgba(24,24,41,0.98);
+      border-radius: 32px;
+      box-shadow: 0 8px 40px 0 #15beff55, 0 0 0 2px #fff1 inset;
+      padding: 32px 28px 24px 28px;
+      min-width: 270px;
+      max-width: 300px;
+      transition: transform 0.35s cubic-bezier(.73,2,.42,.98), box-shadow 0.5s;
+      position: relative;
+      flex: 1 1 300px;
+      min-height: 420px;
+      overflow: visible;
+    }
+    .card:hover {
+      transform: translateY(-10px) scale(1.025) rotate(-0.3deg);
+      box-shadow: 0 16px 64px 0 #ff38e8aa, 0 0 0 2px #fff5 inset;
+    }
+    .icon {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 22px;
+      display: inline-block;
+      vertical-align: middle;
+      transition: filter 0.5s;
+      filter: drop-shadow(0 0 10px #26ffe0dd);
+    }
+    .card-title {
+      color: #fff;
+      font-size: 1.5rem;
+      margin-bottom: 18px;
+      letter-spacing: 1px;
+    }
+    .energy-value {
+      font-size: 2.5rem;
+      margin: 5px 0 16px 0;
+      letter-spacing: 1px;
+      color: #33fff5;
+      transition: color 0.4s;
+    }
+    .energy-unit {
+      font-size: 1.2rem;
+      color: #959fff;
+      margin-left: 6px;
+    }
+    .graph {
+      margin: 24px 0 0 0;
+      width: 100%;
+      height: 90px;
+    }
+    .trend {
+      font-size: 1.07rem;
+      margin-top: 10px;
+      color: #fff;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.95;
+    }
+    .trend-up {
+      color: #54ff26;
+      text-shadow: 0 0 10px #54ff2650;
+    }
+    .trend-down {
+      color: #ff4e4e;
+      text-shadow: 0 0 10px #ff4e4e50;
+    }
+    @media (max-width: 900px) {
+      .dashboard {
+        flex-direction: column;
+        align-items: center;
+        gap: 32px;
+      }
+      .card { min-width: 90vw; max-width: 96vw; }
+    }
+
+    /* SVG Animations */
+    .graph line, .graph polygon, .graph polyline {
+      transition: all 0.7s cubic-bezier(.50,.66,.53,1.04);
+    }
+  </style>
+</head>
+<body>
+  <h1>Tableau de bord | Énergies Alternatives</h1>
+  <div class="dashboard">
+
+    <!-- Solaire -->
+    <div class="card" id="card-solaire">
+      <div class="icon">
+        <!-- Soleil stylisé -->
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <defs>
+            <radialGradient id="solar-g" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffe759"/>
+              <stop offset="85%" stop-color="#ff8628"/>
+              <stop offset="100%" stop-color="#ff0059"/>
+            </radialGradient>
+          </defs>
+          <circle cx="28" cy="28" r="14" fill="url(#solar-g)" />
+          <!-- rayons -->
+          <g stroke="#ffd940" stroke-width="3">
+            <line x1="28" y1="4" x2="28" y2="17"/>
+            <line x1="28" y1="52" x2="28" y2="39"/>
+            <line x1="52" y1="28" x2="39" y2="28"/>
+            <line x1="4" y1="28" x2="17" y2="28"/>
+            <line x1="44.3" y1="11.7" x2="36" y2="20"/>
+            <line x1="11.7" y1="44.3" x2="20" y2="36"/>
+            <line x1="11.7" y1="11.7" x2="20" y2="20"/>
+            <line x1="44.3" y1="44.3" x2="36" y2="36"/>
+          </g>
+        </svg>
+      </div>
+      <div class="card-title">Solaire</div>
+      <div class="energy-value"><span id="val-solaire">0</span> <span class="energy-unit">MW</span></div>
+      <svg class="graph" id="graph-solaire" viewBox="0 0 250 90" preserveAspectRatio="none"></svg>
+      <div class="trend" id="trend-solaire"></div>
+    </div>
+
+    <!-- Lunaire -->
+    <div class="card" id="card-lunaire">
+      <div class="icon">
+        <!-- Lune stylisée -->
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <defs>
+            <radialGradient id="moon-g" cx="45%" cy="45%" r="66%">
+              <stop offset="0%" stop-color="#edfaff"/>
+              <stop offset="60%" stop-color="#75e1fa"/>
+              <stop offset="100%" stop-color="#4da7ff"/>
+            </radialGradient>
+            <filter id="moon-glow" x="-10%" y="-10%" width="120%" height="120%">
+              <feGaussianBlur stdDeviation="2.8" result="glow"/>
+              <feMerge>
+                <feMergeNode in="glow"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <circle cx="32" cy="26" r="17" fill="url(#moon-g)" filter="url(#moon-glow)" opacity="0.95"/>
+          <circle cx="28" cy="28" r="14" fill="#171736" opacity="0.70"/>
+        </svg>
+      </div>
+      <div class="card-title">Lunaire</div>
+      <div class="energy-value"><span id="val-lunaire">0</span> <span class="energy-unit">MW</span></div>
+      <svg class="graph" id="graph-lunaire" viewBox="0 0 250 90" preserveAspectRatio="none"></svg>
+      <div class="trend" id="trend-lunaire"></div>
+    </div>
+
+    <!-- Magique -->
+    <div class="card" id="card-magique">
+      <div class="icon">
+        <!-- Icône cristal magique -->
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <defs>
+            <linearGradient id="magic-g1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#e93cff"/>
+              <stop offset="70%" stop-color="#59ffe7"/>
+              <stop offset="100%" stop-color="#3bffd5"/>
+            </linearGradient>
+            <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="6" result="glow"/>
+              <feMerge>
+                <feMergeNode in="glow"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <polygon points="28,6 40,22 36,44 20,44 16,22" fill="url(#magic-g1)" filter="url(#glow)"/>
+          <polygon points="28,10 36,22 32,40 24,40 20,22" fill="#fff7ff18"/>
+        </svg>
+      </div>
+      <div class="card-title">Magique</div>
+      <div class="energy-value"><span id="val-magique">0</span> <span class="energy-unit">MW</span></div>
+      <svg class="graph" id="graph-magique" viewBox="0 0 250 90" preserveAspectRatio="none"></svg>
+      <div class="trend" id="trend-magique"></div>
+    </div>
+
+    <!-- Plasmatique -->
+    <div class="card" id="card-plasma">
+      <div class="icon">
+        <!-- Icône plasma -->
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <defs>
+            <radialGradient id="plasma-g" cx="50%" cy="40%" r="60%">
+              <stop offset="0%" stop-color="#fff300"/>
+              <stop offset="60%" stop-color="#f36b00"/>
+              <stop offset="100%" stop-color="#ff3ded"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="28" cy="31" rx="16" ry="11" fill="#fff9"/>
+          <ellipse cx="28" cy="28" rx="13" ry="13" fill="url(#plasma-g)" opacity="1"/>
+          <ellipse cx="28" cy="28" rx="8" ry="8" fill="#fff2" />
+        </svg>
+      </div>
+      <div class="card-title">Plasmatique</div>
+      <div class="energy-value"><span id="val-plasma">0</span> <span class="energy-unit">MW</span></div>
+      <svg class="graph" id="graph-plasma" viewBox="0 0 250 90" preserveAspectRatio="none"></svg>
+      <div class="trend" id="trend-plasma"></div>
+    </div>
+
+  </div>
+  <script>
+    // ----------- Dashboard Data -----------
+    const energies = {
+      solaire:    { color:"#ffb347", accent:"#ffe759", min:550, max:1300, data:[], trend:0 },
+      lunaire:    { color:"#5fd3ff", accent:"#bcf7ff", min:200, max:600, data:[], trend:0 },
+      magique:    { color:"#ff47e6", accent:"#95ffe6", min:350, max:995, data:[], trend:0 },
+      plasma:     { color:"#ff36c6", accent:"#fdff52", min:400, max:1350, data:[], trend:0 }
+    };
+    const dataPoints = 18;
+
+    function randomIn(min, max, prev=undefined) {
+      // Slight inertia = smoother graphs
+      if (prev!==undefined) {
+        let delta = (max-min)*0.08;
+        let base = prev + ((Math.random()-0.5)*delta*2);
+        return Math.max(min,Math.min(max, base));
+      }
+      return min + Math.random()*(max-min);
+    }
+
+    function initEnergy(key) {
+      const e = energies[key];
+      e.data = [];
+      let v = randomIn(e.min, e.max);
+      for (let i=0; i<dataPoints; ++i) {
+        v = randomIn(e.min,e.max, v);
+        e.data.push(v);
+      }
+    }
+
+    // Runs once at init
+    for (const k in energies) {initEnergy(k);}
+
+    // ----------- Drawing SVG graphs -----------
+    function drawGraph(key) {
+      const svg = document.getElementById('graph-'+key);
+      const e = energies[key];
+      const values = e.data;
+      let min = Math.min(...values);
+      let max = Math.max(...values);
+
+      // Edges
+      min = Math.floor(min*0.94);
+      max = Math.ceil(max*1.08);
+
+      // Path for main line
+      let path = "";
+      let poly = "";
+      for (let i=0; i<values.length; ++i) {
+        let x = Math.round(i * (250/(dataPoints-1)));
+        let y = 90 - Math.round(((values[i]-min)/(max-min+1e-3)) * 70 + 10);
+        path += (i===0 ? "M":"L")+x+" "+y+" ";
+        poly += (x+","+y+" ");
+      }
+      // Fill below
+      let fillPoly = poly + `250,90 0,90`;
+
+      svg.innerHTML = `
+        <polyline points="${poly}" fill="none" stroke="${e.accent}" stroke-width="3.2"
+          style="filter: drop-shadow(0 0 6px ${e.accent});"/>
+        <polygon points="${fillPoly}" fill="${e.color}55" />
+        <polyline points="${poly}" fill="none" stroke="#fff7" stroke-width="1.7" stroke-dasharray="4,5"/>
+      `;
+    }
+    function updateValue(key) {
+      const e = energies[key];
+      const lastVal = Math.round(e.data[ e.data.length-1 ]);
+      document.getElementById('val-'+key).textContent = lastVal;
+      // trend (last interval)
+      let diff = lastVal - Math.round(e.data[ e.data.length-2 ]||lastVal);
+      e.trend = diff;
+      const trendElem = document.getElementById('trend-'+key);
+      trendElem.textContent = (diff>0 ? "+":"")+diff + " MW / 5min";
+      trendElem.className = "trend " + (diff > 0 ? "trend-up" : diff<0 ? "trend-down" : "");
+    }
+    function redrawAll() {
+      for (const k in energies) {
+        drawGraph(k);
+        updateValue(k);
+      }
+    }
+    redrawAll();
+
+    // ----------- Animate Data / Transitions ----------
+    function updateDataTick() {
+      for (const k in energies) {
+        const e = energies[k];
+        e.data.shift();
+        let nextV = randomIn(e.min,e.max, e.data[e.data.length-1]);
+        e.data.push(nextV);
+      }
+      redrawAll();
+
+      // Pop animation on changing numbers
+      for (const k in energies) {
+        const valElem = document.getElementById('val-'+k);
+        valElem.style.color = "#fff";
+        void valElem.offsetWidth;
+        valElem.style.transition = "color .2s";
+        valElem.style.color = energies[k].accent;
+        // smooth trend
+        const card = document.getElementById('card-'+k);
+        card.style.transition = "box-shadow 0.45s";
+        card.style.boxShadow += ',0 0 12px 0 '+energies[k].accent;
+        setTimeout(()=>{ card.style.boxShadow=''; },310);
+      }
+    }
+    setInterval(updateDataTick, 2800);
+
+    // Accent animate on hover
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mouseover', e=>{
+        card.querySelector('.icon').style.filter = 'drop-shadow(0 0 22px #fff777)';
+      });
+      card.addEventListener('mouseleave', e=>{
+        card.querySelector('.icon').style.filter = 'drop-shadow(0 0 10px #26ffe0dd)';
+      });
+    });
+
+    // Responsive resize fix
+    window.addEventListener('resize', redrawAll);
+  </script>
+</body>
+</html>
